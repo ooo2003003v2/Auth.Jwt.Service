@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Auth.Service.Domain.DBModel
 {
-    public partial class AuthServiceContext : DbContext
+    public partial class QccUserContext : DbContext
     {
-        public AuthServiceContext()
+        public QccUserContext()
         {
         }
 
-        public AuthServiceContext(DbContextOptions<AuthServiceContext> options)
+        public QccUserContext(DbContextOptions<QccUserContext> options)
             : base(options)
         {
         }
@@ -30,14 +30,13 @@ namespace Auth.Service.Domain.DBModel
         public virtual DbSet<Lang> Lang { get; set; }
         public virtual DbSet<RefreshToken> RefreshToken { get; set; }
         public virtual DbSet<SystemParam> SystemParam { get; set; }
-        public virtual DbSet<TokenPayload> TokenPayload { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=NS-W7-DEV\\SQLEXPRESS; Database=AuthService;User ID=admin;Password=star01moon;Trusted_Connection=False; ");
+                optionsBuilder.UseSqlServer("Server=NS-W7-DEV\\SQLEXPRESS; Database=QccUser;User ID=admin;Password=star01moon;Trusted_Connection=False; ");
             }
         }
 
@@ -50,11 +49,7 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.AccountTypeId).HasColumnName("account_type_id");
-
-                entity.Property(e => e.ChangePassDeadline)
-                    .HasColumnName("change_pass_deadline")
-                    .HasDefaultValueSql("('1900-01-01')");
+                entity.Property(e => e.ChangePassDeadline).HasDefaultValueSql("('1900-01-01')");
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -62,9 +57,7 @@ namespace Auth.Service.Domain.DBModel
                     .HasMaxLength(100)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.CreatedDate)
-                    .HasColumnName("created_date")
-                    .HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
+                entity.Property(e => e.CreatedDate).HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
@@ -74,12 +67,7 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
-                    .HasColumnName("is_active")
                     .HasDefaultValueSql("((1))");
-
-                entity.Property(e => e.IsRequiredChangePass).HasColumnName("is_required_change_pass");
-
-                entity.Property(e => e.LastLoginDate).HasColumnName("last_login_date");
 
                 entity.Property(e => e.Login)
                     .IsRequired()
@@ -95,19 +83,15 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.OfficeIosCode)
                     .IsRequired()
-                    .HasColumnName("office_ios_code")
                     .HasMaxLength(10)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.Pass)
+                entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasColumnName("pass")
                     .HasMaxLength(200)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.UpdatedDate)
-                    .HasColumnName("updated_date")
-                    .HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
+                entity.Property(e => e.UpdatedDate).HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
 
                 entity.HasOne(d => d.AccountType)
                     .WithMany(p => p.Account)
@@ -118,20 +102,14 @@ namespace Auth.Service.Domain.DBModel
 
             modelBuilder.Entity<AccountAdditionalType>(entity =>
             {
-                entity.ToTable("Account_Additional_Type");
-
                 entity.HasIndex(e => new { e.Id, e.AccountAdditionalTypeId, e.AccountId })
                     .HasName("IX_Account_Additional_Type");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.AccountAdditionalTypeId)
-                    .HasColumnName("account_additional_type_id")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.AccountAdditionalTypeId).HasDefaultValueSql("((-1))");
 
-                entity.Property(e => e.AccountId)
-                    .HasColumnName("account_id")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.AccountId).HasDefaultValueSql("((-1))");
 
                 entity.HasOne(d => d.AccountAdditionalTypeNavigation)
                     .WithMany(p => p.AccountAdditionalType)
@@ -148,27 +126,18 @@ namespace Auth.Service.Domain.DBModel
 
             modelBuilder.Entity<AccountEditLog>(entity =>
             {
-                entity.ToTable("Account_Edit_Log");
-
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.AccountId)
-                    .HasColumnName("account_id")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.AccountId).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.ActionCode)
                     .IsRequired()
-                    .HasColumnName("action_code")
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.CreatedBy)
-                    .HasColumnName("created_by")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.CreatedBy).HasDefaultValueSql("((-1))");
 
-                entity.Property(e => e.CreatedDate)
-                    .HasColumnName("created_date")
-                    .HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
+                entity.Property(e => e.CreatedDate).HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
 
                 entity.Property(e => e.Json)
                     .IsRequired()
@@ -191,8 +160,6 @@ namespace Auth.Service.Domain.DBModel
 
             modelBuilder.Entity<AccountGroup>(entity =>
             {
-                entity.ToTable("Account_Group");
-
                 entity.HasIndex(e => new { e.Id, e.GroupCode, e.IsActive })
                     .HasName("IX_Account_Group");
 
@@ -200,38 +167,30 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.GroupCode)
                     .IsRequired()
-                    .HasColumnName("group_code")
                     .HasMaxLength(100)
                     .HasDefaultValueSql("('')");
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
-                    .HasColumnName("is_active")
                     .HasDefaultValueSql("((1))");
             });
 
             modelBuilder.Entity<AccountGroupAttr>(entity =>
             {
-                entity.ToTable("Account_Group_Attr");
-
                 entity.HasIndex(e => new { e.Id, e.GroupId, e.GroupName, e.LangCode })
                     .HasName("IX_Account_Group_Attr");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.GroupId)
-                    .HasColumnName("group_id")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.GroupId).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.GroupName)
                     .IsRequired()
-                    .HasColumnName("group_name")
                     .HasMaxLength(100)
                     .HasDefaultValueSql("('')");
 
                 entity.Property(e => e.LangCode)
                     .IsRequired()
-                    .HasColumnName("lang_code")
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('')");
 
@@ -244,50 +203,37 @@ namespace Auth.Service.Domain.DBModel
 
             modelBuilder.Entity<AccountImportLog>(entity =>
             {
-                entity.ToTable("Account_Import_Log");
-
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.CreatedDate)
-                    .HasColumnName("created_date")
-                    .HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
+                entity.Property(e => e.CreatedDate).HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
 
                 entity.Property(e => e.FilePath)
                     .IsRequired()
-                    .HasColumnName("file_path")
                     .HasMaxLength(500)
                     .HasDefaultValueSql("('')");
 
                 entity.Property(e => e.LogMsg)
                     .IsRequired()
-                    .HasColumnName("log_msg ")
+                    .HasColumnName("LogMsg ")
                     .HasMaxLength(500)
                     .HasDefaultValueSql("('')");
             });
 
             modelBuilder.Entity<AccountLoginLog>(entity =>
             {
-                entity.ToTable("Account_Login_Log");
-
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.AccessIp)
                     .IsRequired()
-                    .HasColumnName("access_ip")
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.AccountId)
-                    .HasColumnName("account_id")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.AccountId).HasDefaultValueSql("((-1))");
 
-                entity.Property(e => e.CreatedDate)
-                    .HasColumnName("created_date")
-                    .HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
+                entity.Property(e => e.CreatedDate).HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
 
                 entity.Property(e => e.UserAgent)
                     .IsRequired()
-                    .HasColumnName("user_agent")
                     .HasMaxLength(500)
                     .HasDefaultValueSql("('')");
 
@@ -300,8 +246,6 @@ namespace Auth.Service.Domain.DBModel
 
             modelBuilder.Entity<AccountType>(entity =>
             {
-                entity.ToTable("Account_Type");
-
                 entity.HasIndex(e => new { e.Id, e.GroupId, e.Level, e.AccountTypeCode, e.IsActive })
                     .HasName("IX_Account_Type");
 
@@ -309,17 +253,13 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.AccountTypeCode)
                     .IsRequired()
-                    .HasColumnName("account_type_code")
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.GroupId)
-                    .HasColumnName("group_id")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.GroupId).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.IsActive)
                     .IsRequired()
-                    .HasColumnName("is_active")
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Level).HasColumnName("level");
@@ -333,20 +273,15 @@ namespace Auth.Service.Domain.DBModel
 
             modelBuilder.Entity<AccountTypeAttr>(entity =>
             {
-                entity.ToTable("Account_Type_Attr");
-
                 entity.HasIndex(e => new { e.Id, e.AccountTypeId, e.LangCode, e.Name })
                     .HasName("IX_Account_Type_Attr");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.AccountTypeId)
-                    .HasColumnName("account_type_id")
-                    .HasDefaultValueSql("((-1))");
+                entity.Property(e => e.AccountTypeId).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.LangCode)
                     .IsRequired()
-                    .HasColumnName("lang_code")
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('en')");
 
@@ -366,7 +301,7 @@ namespace Auth.Service.Domain.DBModel
             modelBuilder.Entity<ClientMaster>(entity =>
             {
                 entity.HasKey(e => e.ClientKeyId)
-                    .HasName("PK__ClientMa__7296A607C1F71260");
+                    .HasName("PK__ClientMa__7296A60798A71EFC");
 
                 entity.Property(e => e.AllowedOrigin)
                     .IsRequired()
@@ -402,11 +337,8 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.IsPrestore).HasColumnName("is_prestore");
-
                 entity.Property(e => e.LabelKey)
                     .IsRequired()
-                    .HasColumnName("label_key")
                     .HasMaxLength(500)
                     .IsUnicode(false)
                     .HasDefaultValueSql("('')");
@@ -423,15 +355,11 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.LabelDesc)
                     .IsRequired()
-                    .HasColumnName("label_desc")
                     .IsUnicode(false)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.LabelId).HasColumnName("label_id");
-
                 entity.Property(e => e.LangCode)
                     .IsRequired()
-                    .HasColumnName("lang_code")
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('en')");
 
@@ -447,13 +375,8 @@ namespace Auth.Service.Domain.DBModel
                 entity.HasIndex(e => new { e.Id, e.IsDefaultLang, e.LangCode, e.Ref })
                     .HasName("IX_Lang");
 
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.IsDefaultLang).HasColumnName("is_default_lang");
-
                 entity.Property(e => e.LangCode)
                     .IsRequired()
-                    .HasColumnName("lang_code")
                     .HasMaxLength(50)
                     .HasDefaultValueSql("('')");
 
@@ -494,8 +417,6 @@ namespace Auth.Service.Domain.DBModel
 
             modelBuilder.Entity<SystemParam>(entity =>
             {
-                entity.ToTable("System_Param");
-
                 entity.HasIndex(e => new { e.Id, e.ParamKey })
                     .HasName("IX_System_Param");
 
@@ -503,7 +424,6 @@ namespace Auth.Service.Domain.DBModel
 
                 entity.Property(e => e.ParamKey)
                     .IsRequired()
-                    .HasColumnName("param_key")
                     .HasMaxLength(250)
                     .HasDefaultValueSql("('')");
 
@@ -512,38 +432,6 @@ namespace Auth.Service.Domain.DBModel
                     .HasColumnName("value")
                     .HasMaxLength(250)
                     .HasDefaultValueSql("('')");
-            });
-
-            modelBuilder.Entity<TokenPayload>(entity =>
-            {
-                entity.HasKey(e => e.MidToken)
-                    .IsClustered(false);
-
-                entity.ToTable("Token_Payload");
-
-                entity.Property(e => e.MidToken)
-                    .HasColumnName("mid_token")
-                    .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasDefaultValueSql("('')");
-
-                entity.Property(e => e.Ip)
-                    .IsRequired()
-                    .HasColumnName("ip")
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasDefaultValueSql("('')");
-
-                entity.Property(e => e.JwtToken)
-                    .IsRequired()
-                    .HasColumnName("jwt_token")
-                    .HasColumnType("ntext")
-                    .HasDefaultValueSql("('')");
-
-                entity.Property(e => e.LastAccess)
-                    .HasColumnName("last_access")
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("([dbo].[GetLocalDate](DEFAULT))");
             });
 
             OnModelCreatingPartial(modelBuilder);
