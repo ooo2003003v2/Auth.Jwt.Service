@@ -12,23 +12,27 @@ namespace Auth.Service.Application
 {
     public class AccountManager
     {
+
+       public  IGetAccountStrategy getAccountStrategy;
+
         public AccountManager()
         {
 
         }
 
-        public Account GetAccount(LoginInput input)
+        
+
+        public Account GetAccount<T>(T input)
         {
             Account ao = null;
             try
             {
-                ao = AccountPersistence.GetAccounts(new List<int>(), new List<string>() { input.login }).FirstOrDefault();
+                ao = getAccountStrategy.RequestAccount( input );
                 if (ao == null)
                     return null;
-                if (!PasswordVerification(input.password, ao.Pass))
-                    return null;
+             
                 ao.AccountAdditionalType = AccountPersistence.AccountAdditionalType(ao.Id);
-                ao.Pass = null;
+                ao.Password = null;
             }
             catch (Exception ex)
             {
@@ -38,72 +42,21 @@ namespace Auth.Service.Application
             return ao;
         }
 
-        public static Account GetAccountByID(int id)
+        public async void LoggingAccountLogin(Account ao)
         {
-            Account ao = null;
-            try
-            {
-                ao = AccountPersistence.GetAccounts(new List<int>() { id}, new List<string>() ).FirstOrDefault();
-                if (ao == null)
-                    return null;
-                
-                ao.AccountAdditionalType = AccountPersistence.AccountAdditionalType(ao.Id);
-                ao.Pass = null;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex + "");
-
-            }
-            
-            return ao;
+            AccountLoginLog log = new AccountLoginLog() {
+                AccessIp = Singleton.Instance.Context.HttpContext.Connection.RemoteIpAddress.ToString(),
+                AccountId = ao.Id,
+                UserAgent = Singleton.Instance.Context.HttpContext.Request.Headers["User-Agent"].ToString(),
+                CreatedDate = DateTime.UtcNow
+            };
+            DBContextFunction.ExcuteCreateRecords<AccountLoginLog>(new List<AccountLoginLog>() { log });
         }
+       
 
-        public string DecryptFrontEndPass(string _str_pass)
+        public Claim FormingAccountClaim(Account ao)
         {
-            //Log.LogApplication.WriteStateLog(Singleton.Instance.AppSettings.secretKey);
-            //Log.LogApplication.WriteStateLog(System.Text.ASCIIEncoding.ASCII.GetBytes(Singleton.Instance.AppSettings.secretKey));
-            //Log.LogApplication.WriteStateLog(System.Convert.ToBase64String(
-            //              System.Text.ASCIIEncoding.ASCII.GetBytes(Singleton.Instance.AppSettings.FrontendSecretKey)
-            //              ));
-
-            //Log.LogApplication.WriteStateLog(System.Convert.FromBase64String(_str_pass));
-            string str_pass =
-
-            Encoding.UTF8.GetString(
-                        System.Convert.FromBase64String(_str_pass)
-            //)
-            //.Replace(
-            //              System.Convert.ToBase64String(
-            //                  System.Text.ASCIIEncoding.ASCII.GetBytes(Singleton.Instance.AppSettings.FrontendSecretKey)
-            //                  ), ""
-                          );
-            //Log.LogApplication.WriteStateError("_pass");
-            //Log.LogApplication.WriteStateError(str_pass);
-
-            return str_pass;
-
-        }
-
-        public bool PasswordVerification(string str_pass, string hash)
-        {
-            bool flag = false;
-            try
-            {
-                if (BCrypt.Net.BCrypt.Verify(DecryptFrontEndPass(str_pass), hash))
-                    flag = true;
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception(ex + "");
-            }
-            return flag;
-        }
-
-        public static List<Claim> FormingAccountClaim(Account ao)
-        {
-            List<Claim> claims = new List<Claim>() { new Claim("user", JsonConvert.SerializeObject(ao)) };
+            Claim claims = new Claim("user", JsonConvert.SerializeObject(ao));
 
             return claims;
         }

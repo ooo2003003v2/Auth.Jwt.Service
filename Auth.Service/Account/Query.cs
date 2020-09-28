@@ -36,11 +36,13 @@ namespace Auth.Service
         RefreshTokenManger rtm;
         AccountManager am;
         ClientManger cm;
+        AuthManager authm;
         public Query()
         {
             rtm = new RefreshTokenManger();
             am = new AccountManager();
             cm = new ClientManger();
+            authm = new AuthManager(am);
         }
 
         //[GraphQLMetadata("login")]
@@ -55,21 +57,37 @@ namespace Auth.Service
             if (client == null)
                 throw new Exception("client not found");
             //Singleton.Instance.Context.HttpContext.Response.Headers.Add("header", "token");
+            am.getAccountStrategy = new LoginByRequestInput();
             var ao = am.GetAccount(login);
             if (ao == null)
                 throw new Exception("Login fail.");
-   
-            List<Claim> claims = new List<Claim>() { new Claim("user", JsonConvert.SerializeObject(ao)), new Claim("gateway", client.ClientKey) };
-            res.expires = DateTime.UtcNow.AddMinutes(Singleton.Instance.AppSettings.JWTConfig.expireIn);
-            res.accessToken = JwtHeader.GenerateAccessToken(claims, client);         
-            res.refreshToken = JwtHeader.GenerateRefreshToken(ao, client);
-
-            return res;
+            am.LoggingAccountLogin(ao);
+            return authm.FormatAuthResponse(client, ao);
 
         }
 
-        //[GraphQLMetadata("logout")]
-        //[GraphQLAuthorize(Policy = "Activaccesspolicy")]
+
+        [GraphQLAuthorize(Policy = "AuthorizedPolicy")]
+        public AuthResponse RefreshToken(IResolveFieldContext context)
+        {
+           
+            var _client = Singleton.Instance.Context.HttpContext.User.Claims.Where(c => c.Type == "Client")
+                   .Select(c => c.Value).SingleOrDefault();
+            var client = cm.GetCurrentClient(_client);
+            if (client == null)
+                throw new Exception("client not found");
+            var token = (Singleton.Instance.Context.HttpContext.Request.Headers["authorization"]+"").Split(" ")[1];
+            var refreshTokenRrd = rtm.GetRefreshTokenRecord(token, client, false);
+            if(refreshTokenRrd == null)
+                throw new Exception("refresh token not found");
+            rtm.UpdateTokenExpireTime(client, refreshTokenRrd);
+
+            am.getAccountStrategy = new LoginById();
+            var ao = am.GetAccount(refreshTokenRrd.AccountId);
+            return authm.FormatAuthResponse(client, ao);
+
+        }
+
         [GraphQLAuthorize(Policy = "AuthorizedPolicy")]
         public string Logout()
         {
@@ -81,39 +99,6 @@ namespace Auth.Service
             var token = (Singleton.Instance.Context.HttpContext.Request.Headers["authorization"] + "").Split(" ")[1];
             rtm.RemoveRefreshTokenRd(client, token);
             return null;
-        }
-
-        [GraphQLAuthorize(Policy = "AuthorizedPolicy")]
-        public AuthResponse RefreshToken(IResolveFieldContext context)
-        {
-            var res = new AuthResponse();
-            var _client = Singleton.Instance.Context.HttpContext.User.Claims.Where(c => c.Type == "Client")
-                   .Select(c => c.Value).SingleOrDefault();
-            var client = cm.GetCurrentClient(_client);
-            if (client == null)
-                throw new Exception("client not found");
-            var token = (Singleton.Instance.Context.HttpContext.Request.Headers["authorization"]+"").Split(" ")[1];
-            var refreshTokenRrd = rtm.GetRefreshTokenRecord(token, client,true);
-            if(refreshTokenRrd == null)
-                throw new Exception("refresh token not found");
-            rtm.UpdateTokenExpireTime(client, refreshTokenRrd);
-            refreshTokenRrd.Account.RefreshToken = null;
-            List<Claim> claims = new List<Claim>() { new Claim("user", JsonConvert.SerializeObject(refreshTokenRrd.Account)), new Claim("gateway", client.ClientKey) };
-            res.expires = DateTime.UtcNow.AddMinutes(Singleton.Instance.AppSettings.JWTConfig.expireIn);
-            res.accessToken = JwtHeader.GenerateAccessToken(claims, client);
-            res.refreshToken = JwtHeader.GenerateRefreshToken(refreshTokenRrd.Account, client); ;
-            return res;
-
-        }
-
-        //[GraphQLMetadata("hello")]
-
-        [GraphQLAuthorize(Policy = "AuthorizedPolicy")]
-        public string Hello()
-        {
-            //return "";
-            //Singleton.Instance.Context.HttpContext.Response.Headers.Add("header", "token");
-            return "ht";
         }
 
     }
