@@ -95,14 +95,14 @@ namespace Auth.Service.Application
             return token;
         }
 
-        public static string RefreshAccessToken(string _token )
-        {
-            var token = RefreshTokenPersistence.GetRefreshTokenRecord(_token, null, false);
-            var ao = AccountManager.GetAccountByID(token.AccountId);
-            var client = ClientPersistence.GetClients(new List<string>(), new List<int>() { token.ClientKeyId }).FirstOrDefault();
-            var newAccessToken= GenerateAccessToken(AccountManager.FormingAccountClaim(ao), client);
-            return newAccessToken;
-        }
+        //public static string RefreshAccessToken(string _token )
+        //{
+        //    var token = RefreshTokenPersistence.GetRefreshTokenRecord(_token, null, false);
+        //    var ao = AccountManager.GetAccountByID(token.AccountId);
+        //    var client = ClientPersistence.GetClients(new List<string>(), new List<int>() { token.ClientKeyId }).FirstOrDefault();
+        //    var newAccessToken= GenerateAccessToken(AccountManager.FormingAccountClaim(ao), client);
+        //    return newAccessToken;
+        //}
 
         public static void UpdateContextUserAndToken( string newAccessToken)
         {
