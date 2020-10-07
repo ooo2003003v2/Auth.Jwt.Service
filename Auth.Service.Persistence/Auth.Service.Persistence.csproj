@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Auth.Service.Domain\Auth.Service.Domain.csproj" />
+    <ProjectReference Include="..\General.EF.Core.Function\General.EF.Core.Function.csproj" />
   </ItemGroup>
 
 </Project>

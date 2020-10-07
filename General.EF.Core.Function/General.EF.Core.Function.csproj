@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Auth.Service.Domain\Auth.Service.Domain.csproj" />
     <ProjectReference Include="..\General.EF.Core.Function.Domain\General.EF.Core.Function.Domain.csproj" />
   </ItemGroup>
 

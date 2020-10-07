@@ -5,7 +5,8 @@ using System.Linq;
 using Auth.Service.Domain.DBModel;
 using Auth.Service.Domain.Model.Request;
 using Auth.Service.Persistence;
-using General.Input.Validifier;
+using General.Validifier;
+using General.EF.Core.Function;
 namespace Auth.Service.Application
 {
     public interface IGetAccountStrategy
@@ -25,8 +26,8 @@ namespace Auth.Service.Application
 
                 var _input = (input as LoginInput);
                 
-                ao = AccountPersistence.GetAccounts(new List<int>(), !GeneralValidifier.IsValidEmail(_input.login)?  new List<string>() { _input.login }: new List<string>(),
-                    GeneralValidifier.IsValidEmail(_input.login) ? new List<string>() { _input.login } : new List<string>()
+                ao = AccountPersistence.GetAccounts(new List<int>(), !InputValidifier.IsValidEmail(_input.login)?  new List<string>() { _input.login }: new List<string>(),
+                    InputValidifier.IsValidEmail(_input.login) ? new List<string>() { _input.login } : new List<string>()
                     ).FirstOrDefault();
                 if (ao == null)
                     return null;

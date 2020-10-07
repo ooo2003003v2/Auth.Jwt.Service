@@ -9,7 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
-
+using General.EF.Core.Function;
 namespace Auth.Service.Application
 {
     public class JwtHeader

@@ -6,6 +6,7 @@ using Auth.Service.Domain.DBModel;
 using Auth.Service.Domain.Model;
 using Auth.Service.Persistence;
 using Newtonsoft.Json;
+using General.EF.Core.Function;
 namespace Auth.Service.Application
 {
     public class RefreshTokenManger

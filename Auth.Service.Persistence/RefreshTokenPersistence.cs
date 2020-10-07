@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using Auth.Service.Domain.DBModel;
 using Microsoft.EntityFrameworkCore;
+using General.EF.Core.Function;
 namespace Auth.Service.Persistence
 {
     public class RefreshTokenPersistence

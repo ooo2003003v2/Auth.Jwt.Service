@@ -9,7 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\General\General.Input.Validifier\General.Input.Validifier\General.Input.Validifier.csproj" />
+    
+    <ProjectReference Include="..\..\General\General.Validifier\General.Validifier\General.Validifier.csproj" />
     <ProjectReference Include="..\Auth.Service.Persistence\Auth.Service.Persistence.csproj" />
   </ItemGroup>
 

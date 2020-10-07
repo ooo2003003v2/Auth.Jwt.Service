@@ -9,6 +9,7 @@ using Auth.Service.Domain.DBModel;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using General.Auth.Account.Domain;
+using General.EF.Core.Function;
 namespace Auth.Service.Application
 {
     public class AccountManager
