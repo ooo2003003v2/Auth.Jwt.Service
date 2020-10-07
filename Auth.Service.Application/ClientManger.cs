@@ -7,7 +7,7 @@ using Auth.Service.Persistence;
 using Newtonsoft.Json;
 namespace Auth.Service.Application
 {
-    public class ClientManger
+    public class ClientManger     
     {
        public ClientManger()
         {

@@ -48,8 +48,8 @@ namespace Auth.Service.Application
             var handler = new JwtSecurityTokenHandler();
 
             var _token = handler.CreateJwtSecurityToken(Singleton.Instance.AppSettings.JWTConfig.issuer, client.ClientName, new ClaimsIdentity(claims), null, DateTime.UtcNow.AddMinutes(
-                1
-                //client.RefreshTokenLifeTime
+                
+                client.RefreshTokenLifeTime
                 ), null, creds, encryptingCredentials);
              
             return tokenHandler.WriteToken(_token);
@@ -63,8 +63,8 @@ namespace Auth.Service.Application
 
             var issusTime = DateTime.UtcNow;
             var expTime = DateTime.UtcNow.AddMinutes(
-                2
-                //RequestedClient.RefreshTokenLifeTime+120
+                
+                RequestedClient.RefreshTokenLifeTime+2
                 );
                 //.AddMinutes(Singleton.Instance.AppSettings.JWTConfig.expireIn);
          
