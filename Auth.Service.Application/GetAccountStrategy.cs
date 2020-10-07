@@ -5,6 +5,7 @@ using System.Linq;
 using Auth.Service.Domain.DBModel;
 using Auth.Service.Domain.Model.Request;
 using Auth.Service.Persistence;
+using General.Input.Validifier;
 namespace Auth.Service.Application
 {
     public interface IGetAccountStrategy
@@ -23,7 +24,10 @@ namespace Auth.Service.Application
             {
 
                 var _input = (input as LoginInput);
-                ao = AccountPersistence.GetAccounts(new List<int>(), new List<string>() { _input.login }).FirstOrDefault();
+                
+                ao = AccountPersistence.GetAccounts(new List<int>(), !GeneralValidifier.IsValidEmail(_input.login)?  new List<string>() { _input.login }: new List<string>(),
+                    GeneralValidifier.IsValidEmail(_input.login) ? new List<string>() { _input.login } : new List<string>()
+                    ).FirstOrDefault();
                 if (ao == null)
                     return null;
                 if (! BCrypt.Net.BCrypt.Verify(PasswordManager.DecryptFrontEndPass(_input.password), ao.Password))
@@ -48,7 +52,7 @@ namespace Auth.Service.Application
             {
 
 
-                ao = AccountPersistence.GetAccounts(new List<int>() { int.Parse(input + "") }, new List<string>()).FirstOrDefault();
+                ao = AccountPersistence.GetAccounts(new List<int>() { int.Parse(input + "") }, new List<string>(), new List<string>()).FirstOrDefault();
                 if (ao == null)
                     return null;                
             }

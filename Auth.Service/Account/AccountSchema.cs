@@ -29,7 +29,17 @@ namespace Auth.Service
                 refreshToken:String
                 expiresIn:Int
                 expires:DateTime
+account:Account
             }
+
+type Account{
+name:String
+email:String
+accountType:AccountType
+}
+type AccountType{
+AccountTypeName: String
+}
 
             type Query {
               login(login:LoginInput!): AuthResponse    
