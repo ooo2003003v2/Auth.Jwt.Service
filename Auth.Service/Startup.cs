@@ -153,7 +153,7 @@ namespace Auth.Service
                 //await next();
             });
 
-            app.UseGraphQL<ISchema>("/graphql");
+            app.UseGraphQL<ISchema>("/auth");
             //app.UseEndpoints(endpoints =>
             //{
             //    endpoints.MapControllers();
