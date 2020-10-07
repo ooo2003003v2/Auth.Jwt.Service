@@ -8,7 +8,7 @@ namespace Auth.Service.Persistence
 {
     public class AccountPersistence
     {
-        public static List<Account> GetAccounts(List<int> id, List<string> email)
+        public static List<Account> GetAccounts(List<int> id, List<string> login, List<string> email)
         {
             List<Account> ao = new List<Account>();
             try
@@ -18,6 +18,7 @@ namespace Auth.Service.Persistence
 
                     ao = db.Account
                        .Where(p => id.Count == 0 || id.Any(d => d == p.Id))
+                       .Where(p => login.Count == 0 || login.Any(d => d == p.Login))
                        .Where(p => email.Count == 0 || email.Any(d => d == p.Email))
                        .Where(p => p.IsActive == true)
                        .ToList();
