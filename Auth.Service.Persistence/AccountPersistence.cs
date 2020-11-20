@@ -22,9 +22,9 @@ namespace Auth.Service.Persistence
                        .Where(p => login.Count == 0 || login.Any(d => d == p.Login))
                        .Where(p => email.Count == 0 || email.Any(d => d == p.Email))
                        .Where(p => p.IsActive == true)
-                       .ToList();
+                       
+                       .ToList();                
 
-                    ;                
 
                 }
             }

@@ -36,6 +36,7 @@ type Account{
 name:String
 email:String
 accountType:AccountType
+isRequiredChangePass:Boolean
 }
 type AccountType{
 accountTypeCode:String
