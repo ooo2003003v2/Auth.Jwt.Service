@@ -135,21 +135,23 @@ namespace Auth.Service
 
 
             var validationRules = app.ApplicationServices.GetServices<IValidationRule>();
-            app.Use(async (context, next) => 
+            app.Use(async (context, next) =>
             {
-                LogApplication.WriteStateLog("Start");
-                if (!context.User.Identity.IsAuthenticated                
-                )
-                {
+                
+                    LogApplication.WriteStateLog("Start");
+                    if (!context.User.Identity.IsAuthenticated
+                    )
+                    {
 
-                    if (string.IsNullOrEmpty(context.Request.Headers["Authorization"] + "") && context.Request.Method.ToUpper() == "POST")
+                        if (string.IsNullOrEmpty(context.Request.Headers["Authorization"] + "") && context.Request.Method.ToUpper() == "POST")
+                            await next();
+                        else await context.ChallengeAsync(JwtBearerDefaults.AuthenticationScheme);
+                    }
+                    else
+                    {
                         await next();
-                    else  await context.ChallengeAsync(JwtBearerDefaults.AuthenticationScheme);
-                }
-                else
-                {
-                    await next();
-                }
+                    }
+                
                 //await next();
             });
 
