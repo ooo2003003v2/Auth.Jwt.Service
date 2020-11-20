@@ -32,7 +32,7 @@ namespace Auth.Service.Application
                 ao = getAccountStrategy.RequestAccount( input );
                 if (ao == null)
                     return null;
-             
+                ao.AccountType = AccountPersistence.AccountType(ao.AccountTypeId);
                 ao.AccountAdditionalType = AccountPersistence.AccountAdditionalType(ao.Id);
                 ao.Password = null;
             }

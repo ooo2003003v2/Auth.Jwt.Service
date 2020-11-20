@@ -36,6 +36,32 @@ namespace Auth.Service.Persistence
             return ao;
         }
 
+
+        public static AccountType AccountType(int id)
+        {
+            AccountType at = null;
+            try
+            {
+                using (var db = new DBContext())
+                {
+
+                    at = db.AccountType
+                       .Where(p => p.Id == id)
+                       .Include(p=>p.AccountTypeAttr)
+                       .First();
+
+                    ;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex + "");
+
+            }
+            return at;
+        }
+
         public static List<AccountAdditionalType> AccountAdditionalType(int accountId)
         {
             List<AccountAdditionalType> ao = new List<AccountAdditionalType>();

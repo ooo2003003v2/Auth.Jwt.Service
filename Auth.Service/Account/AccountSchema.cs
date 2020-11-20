@@ -38,7 +38,8 @@ email:String
 accountType:AccountType
 }
 type AccountType{
-AccountTypeName: String
+accountTypeCode:String
+accountTypeName: String
 }
 
             type Query {
