@@ -55,12 +55,14 @@ namespace Auth.Service
             var res = new AuthResponse();
             var client = cm.GetCurrentClient(_client);
             if (client == null)
-                throw new Exception("client not found");
+                throw new ExecutionError(LabelManager.GetLabel("response.client.not.found") );
             //Singleton.Instance.Context.HttpContext.Response.Headers.Add("header", "token");
             am.getAccountStrategy = new LoginByRequestInput();
             var ao = am.GetAccount(login);
-            if (ao == null)
-                throw new Exception("Login fail.");
+            if (ao == null)            
+                
+                throw new ExecutionError(LabelManager.GetLabel("response.login.fail"));
+            
             am.LoggingAccountLogin(ao);
             return authm.FormatAuthResponse(client, ao);
 
@@ -75,15 +77,23 @@ namespace Auth.Service
                    .Select(c => c.Value).SingleOrDefault();
             var client = cm.GetCurrentClient(_client);
             if (client == null)
-                throw new Exception("client not found");
+                throw new ExecutionError(LabelManager.GetLabel("response.client.not.found"));
+      
+
             var token = (Singleton.Instance.Context.HttpContext.Request.Headers["authorization"]+"").Split(" ")[1];
             var refreshTokenRrd = rtm.GetRefreshTokenRecord(token, client, false);
             if(refreshTokenRrd == null)
-                throw new Exception("refresh token not found");
-            rtm.UpdateTokenExpireTime(client, refreshTokenRrd);
+                throw new ExecutionError(LabelManager.GetLabel("response.refresh.token.not.found"));
 
             am.getAccountStrategy = new LoginById();
             var ao = am.GetAccount(refreshTokenRrd.AccountId);
+            if(ao==null)
+                throw new ExecutionError(LabelManager.GetLabel("response.account.not.found"));
+            if (new DateTimeOffset(ao.UpdatedDate).ToUnixTimeSeconds() >  double.Parse(_updateDate))
+                throw new ExecutionError(LabelManager.GetLabel("response.account.had.been.update"));
+
+            rtm.UpdateTokenExpireTime(client, refreshTokenRrd);
+         
             return authm.FormatAuthResponse(client, ao);
 
         }
@@ -95,7 +105,7 @@ namespace Auth.Service
                   .Select(c => c.Value).SingleOrDefault();
             var client = cm.GetCurrentClient(_client);
             if (client == null)
-                throw new Exception("client not found");
+                throw new ExecutionError(LabelManager.GetLabel("response.client.not.found"));
             var token = (Singleton.Instance.Context.HttpContext.Request.Headers["authorization"] + "").Split(" ")[1];
             rtm.RemoveRefreshTokenRd(client, token);
             return null;
