@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using General.EF.Core.Function;
+using General.Validifier;
 namespace Auth.Service.Application
 {
     public class JwtHeader
@@ -68,11 +69,12 @@ namespace Auth.Service.Application
                 );
                 //.AddMinutes(Singleton.Instance.AppSettings.JWTConfig.expireIn);
          
-            List<Claim> claims = new List<Claim>() { 
+            List<Claim> claims = new List<Claim>() {
+                       new Claim("LastUpdateDate",new DateTimeOffset(ao.UpdatedDate).ToUnixTimeSeconds()+""),
                 new Claim("Client", RequestedClient.ClientKey) 
             };
-            
-            
+            //claims.Add(new Claim("UpdateDate", ao.UpdatedDate.ToString(InputValidifier.ISOFormat)));
+
             var _signInKey =
                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Singleton.Instance.AppSettings.JWTConfig.signInKey));
             //"SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeyS"

@@ -75,6 +75,8 @@ namespace Auth.Service
            
             var _client = Singleton.Instance.Context.HttpContext.User.Claims.Where(c => c.Type == "Client")
                    .Select(c => c.Value).SingleOrDefault();
+            var _updateDate = Singleton.Instance.Context.HttpContext.User.Claims.Where(c => c.Type == "LastUpdateDate")
+            .Select(c => c.Value).SingleOrDefault();
             var client = cm.GetCurrentClient(_client);
             if (client == null)
                 throw new ExecutionError(LabelManager.GetLabel("response.client.not.found"));
