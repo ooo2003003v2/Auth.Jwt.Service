@@ -79,8 +79,7 @@ namespace Auth.Service
             services.AddGraphQL(options =>
             {
                 options.EnableMetrics = false;
-                options.ExposeExceptions = true;
-                
+          
 
             })
                

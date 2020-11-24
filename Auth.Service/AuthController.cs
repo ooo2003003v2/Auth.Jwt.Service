@@ -48,7 +48,7 @@ namespace Auth.Service
                 _.OperationName = query.OperationName;
                 _.Inputs = inputs;
                 _.EnableMetrics = false;
-                _.ExposeExceptions = true;
+              
                 _.UserContext = graphQlUserContext;
             });
 

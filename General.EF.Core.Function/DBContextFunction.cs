@@ -108,7 +108,7 @@ namespace General.EF.Core.Function
                             var difference = DetailedCompare(oldRd, n);
                             foreach (var d in difference)
                                 typeof(T).GetProperty(d.Prop).SetValue(oldRd, d.valB);
-
+                            
 
                         });
 
