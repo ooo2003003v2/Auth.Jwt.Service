@@ -47,7 +47,7 @@ accountTypeName: String
               login(login:LoginInput!): AuthResponse    
               refreshToken: AuthResponse    
               logout: AuthResponse    
-            
+              hello: String
             }
             ", _ =>
             {
