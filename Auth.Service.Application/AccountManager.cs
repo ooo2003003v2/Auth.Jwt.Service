@@ -36,6 +36,8 @@ namespace Auth.Service.Application
                 ao.AccountType = AccountPersistence.AccountType(ao.AccountTypeId);
                 ao.AccountAdditionalType = AccountPersistence.AccountAdditionalType(ao.Id);
                 ao.Password = null;
+                if (!ao.IsRequiredChangePass)
+                    ao.IsRequiredChangePass = DateTime.UtcNow >= ao.ChangePassDeadline;
             }
             catch (Exception ex)
             {
