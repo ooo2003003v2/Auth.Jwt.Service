@@ -21,9 +21,10 @@ namespace Auth.Service.Application
             var account = am.FormingAuthAccount(ao);
             var res = new AuthResponse();
             var claims = new List<Claim>() { am.FormatUserToClaim( account), new Claim("gateway", client.ClientKey) };
-            res.account = account;
+            //res.account = account;
             res.expires = DateTime.UtcNow.AddMinutes(Singleton.Instance.AppSettings.JWTConfig.expireIn);
-            res.accessToken = JwtHeader.GenerateAccessToken(claims, client);
+            res.idToken = JwtHeader.GenerateIdToken(claims, client);
+            res.accessToken = JwtHeader.GenerateAccessToken( new List<Claim>() { new Claim("Id", account.Id + ""), new Claim("gateway", client.ClientKey) }, client);
             res.refreshToken = JwtHeader.GenerateRefreshToken(ao, client);
             return res;
         }

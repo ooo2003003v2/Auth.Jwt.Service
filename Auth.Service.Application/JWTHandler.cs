@@ -27,15 +27,11 @@ namespace Auth.Service.Application
 
             var tokenHandler = new JwtSecurityTokenHandler();
           
-            //var claims = new List<Claim>{
-            //       new Claim("graphqlaccess","false")
-            //       };
-
-
+       
 
             var _signInKey =
                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(client.ClientId));
-                //"SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeyS"
+                
 
 
             var _encryptKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(client.ClientSecret));
@@ -48,12 +44,34 @@ namespace Auth.Service.Application
 
             var handler = new JwtSecurityTokenHandler();
 
-            var _token = handler.CreateJwtSecurityToken(Singleton.Instance.AppSettings.JWTConfig.issuer, client.ClientName, new ClaimsIdentity(claims), null, DateTime.UtcNow.AddMinutes(
-                
-                client.RefreshTokenLifeTime
-                ), null, creds, encryptingCredentials);
+            
+            var _token = handler.CreateJwtSecurityToken(Singleton.Instance.AppSettings.JWTConfig.issuer, client.ClientName, new ClaimsIdentity(claims), DateTime.UtcNow, DateTime.UtcNow.AddMinutes(client.RefreshTokenLifeTime), DateTime.UtcNow, creds, encryptingCredentials);
              
             return tokenHandler.WriteToken(_token);
+        }
+
+        public static string GenerateIdToken(List<Claim> claims, ClientMaster client)
+        {
+
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+         
+
+            var _signInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(client.ClientId));
+            
+
+
+            
+
+
+
+            var creds = new SigningCredentials(_signInKey, SecurityAlgorithms.HmacSha256);
+         
+            var idToken = new JwtSecurityToken(Singleton.Instance.AppSettings.JWTConfig.issuer, client.ClientName, claims, expires: DateTime.UtcNow.AddMinutes(client.RefreshTokenLifeTime), signingCredentials: creds);
+
+
+            return tokenHandler.WriteToken(idToken);
         }
 
         public static string GenerateRefreshToken(Account ao,  ClientMaster RequestedClient)
