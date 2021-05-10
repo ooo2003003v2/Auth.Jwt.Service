@@ -26,10 +26,11 @@ namespace Auth.Service
             type AuthResponse{
                 accessToken:String
                 tokenType:String
+idToken:String
                 refreshToken:String
                 expiresIn:Int
                 expires:DateTime
-account:Account
+
             }
 
 type Account{
